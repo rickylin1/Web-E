@@ -16,18 +16,30 @@ def subpage_subcategory_links(soup):
 
 def product_links(subpage_categories):
     product_urls = []
-    for link in subpage_categories:
-        full_url = "https://www.costco.com" + link
-        driver.get(full_url)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+    if not subpage_categories:  # If subpage_categories is empty, extract product links from product image holders
         content = BeautifulSoup(driver.page_source, 'html.parser')
-        for product_section in content.find_all('div', {'automation-id': 'productList'}):
-            for product_link in product_section.find_all('a'):
-                product_urls.append(product_link['href'])
+        for product_link in content.find_all('a', class_='product-image-url'):
+            product_urls.append(product_link['href'])
+            product_url = product_link['href']
+    else:     
+        for link in subpage_categories:
+            full_url = "https://www.costco.com" + link
+            driver.get(full_url)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            content = BeautifulSoup(driver.page_source, 'html.parser')
+            for product_section in content.find_all('div', {'automation-id': 'productList'}):
+                for product_link in product_section.find_all('a'):
+                    product_urls.append(product_link['href'])
+                    product_url = product_link['href']
     product_urls = list(set(product_urls))
     valid_urls = [url for url in product_urls if url.endswith('.html')]
     print(valid_urls)
+    product_details = productdata.extract_product_details(driver,valid_urls)
+    # print(product_details)
+
+
     return valid_urls
+
 
 
 # Set up Selenium WebDriver
@@ -65,10 +77,7 @@ try:
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             # Create subpage soup
             subpage_soup = BeautifulSoup(driver.page_source, 'html.parser')
-            print(product_links(subpage_subcategory_links(subpage_soup)))
-            # Do something with subpage_soup
-            # For example, print the title
-            print(subpage_soup.title.text)
+            product_links(subpage_subcategory_links(subpage_soup))
 
         finally:
             # Go back to the previous page
@@ -84,4 +93,4 @@ finally:
     driver.quit()
 
 # Now you have the URLs extracted and stored in url_links list
-print(url_links)
+# print(url_links)
