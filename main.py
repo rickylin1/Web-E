@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
 import time
 import productdata
+import pandas as pd
 
 def subpage_subcategory_links(soup):
     category_link = []
@@ -35,6 +36,8 @@ def product_links(subpage_categories):
     valid_urls = [url for url in product_urls if url.endswith('.html')]
     print(valid_urls)
     product_details = productdata.extract_product_details(driver,valid_urls)
+    df = pd.DataFrame(product_details)
+    df.to_csv('costco_data.csv',index = False)
     # print(product_details)
 
 
@@ -44,18 +47,27 @@ def product_links(subpage_categories):
 
 # Set up Selenium WebDriver
 driver = webdriver.Chrome()
-url = 'https://www.costco.com/electronics.html'
+# url = 'https://www.costco.com/electronics.html'
+url = 'https://www.costco.com/furniture.html'
 driver.get(url)
+
+#list of dicts
+product_details = []
 
 # List to store extracted URLs
 url_links = []
 
 try:
     # Wait for parent elements to load
+    # parent_elements = WebDriverWait(driver, 10).until(
+    #     EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".col-xs-4.col-md-2.eco-ftr"))
+    # )
+
     parent_elements = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".col-xs-4.col-md-2.eco-ftr"))
+    EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".eco-ftr"))
     )
-    
+
+        
     # Extract URLs using Beautiful Soup
     for parent in parent_elements:
         # Parse HTML content of the parent element
@@ -66,6 +78,19 @@ try:
             # Get the href attribute value
             link = child_element['href']
             url_links.append(link)
+
+        img_elements = WebDriverWait(driver, 10).until(
+    EC.presence_of_all_elements_located((By.CSS_SELECTOR, "img.img-responsive.btn-block"))
+    )
+
+    # for img_element in img_elements:
+    #     soup = BeautifulSoup(img_element.get_attribute('innerHTML'), 'html.parser')
+    #     # Navigate to the parent's parent of the img element using BeautifulSoup
+    #     parent_parent_element = img_element.parent().parent
+    #     # Assuming href attribute is in the parent's parent element
+    #     href_attribute = parent_parent_element['href']
+    #     if href_attribute:
+    #         url_links.append(href_attribute)
     
     # Loop through each link and click
     for link in url_links:
