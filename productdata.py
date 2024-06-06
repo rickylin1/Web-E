@@ -1,3 +1,4 @@
+#NOTE Price is still buggy sometimes
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -75,8 +76,8 @@ def get_product_details(driver, url):
         print("Error fetching {}: {}".format(url, e))
         product_details = {key: None for key in ['name', 'brand', 'price', 'category', 'features', 'item_number','model_number']}
 
-    for key, value in product_details.items():
-        print(f"{key}: {value}")
+    # for key, value in product_details.items():
+        # print(f"{key}: {value}")
     return product_details
 
 #returns list of dict
@@ -87,9 +88,9 @@ def extract_product_details(driver, urls):
     products = []
     counter = 0
     for url in urls:
-        print('enter' + str(counter))
+        # print('enter' + str(counter))
         product_details = get_product_details(driver, url)
-        print('added')
+        # print('added')
         counter +=1
         products.append(product_details)
     return products
@@ -104,7 +105,7 @@ def homepage_get_all_categories(driver,url):
         # Wait for the page to load
         WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
-        print('finished body')
+        # print('finished body')
 
         menu_elements = WebDriverWait(driver, 5).until(
         EC.presence_of_all_elements_located((By.CLASS_NAME, "menu"))
@@ -112,25 +113,25 @@ def homepage_get_all_categories(driver,url):
 
         # Iterate over each menu element
         menu_element = menu_elements[0]
-        print(menu_element.get_attribute("innerHTML"))
+        # print(menu_element.get_attribute("innerHTML"))
         try:
             driver.execute_script("document.getElementById('shop-mt-mobile').click();")
             print("Clicked on the 'Shop' anchor successfully.")
         except TimeoutException:
             print("Timeout waiting for 'Shop' anchor in a menu element.")
             
-        print('after click')
+        # print('after click')
 
-        submenu = WebDriverWait(driver, 10).until(
+        submenu = WebDriverWait(driver, 5).until(
               EC.element_to_be_clickable((By.ID, "navigation-v2-category-container")))
         
-        print('found navigation container')
+        # print('found navigation container')
 
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.ID, 'level1-all-departments'))
         )
 
-        print('found all departments')
+        # print('found all departments')
         
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         div = soup.find('div', {'id': 'level1-all-departments'})
