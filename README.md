@@ -7,9 +7,16 @@ Built w/ Selenium, Beautiful Soup, Pandas
 - Fetch newest deals relevant to your interests
 - Help plan future shopping lists
 
-## Instructions
-1. Setup and Dependencies
-- Make sure you are in the Webscrape repo by opening that folder (use cd/pwd)
-```
-flask run
-```
+## Challenges
+- Number of page redirect requrests potentially can violate TOS and seem like a bot, so ethics is a problem
+- Did not upload amazon info, since I don't want to get banned from amazon
+
+## Lessons
+- Learned how to use chrome page inspector and DOM console to target elements and information I am interested in
+- Using time to make sure elements are loaded in, using try except to catch problems
+- Navigating urls and subpage directories
+
+## Future Goals
+- Work on making data more descriptive, have more attributes for each product object (ex. reviews, company info, instructions)
+- Some data extracted can be NAN, may be issue with ID identifying
+- Deploy a friendly UI to prompt
