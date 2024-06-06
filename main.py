@@ -47,8 +47,8 @@ def product_links(subpage_categories):
 
 # Set up Selenium WebDriver
 driver = webdriver.Chrome()
-# url = 'https://www.costco.com/electronics.html'
-url = 'https://www.costco.com/furniture.html'
+url = "https://www.costco.com"
+
 driver.get(url)
 
 #list of dicts
@@ -56,6 +56,9 @@ product_details = []
 
 # List to store extracted URLs
 url_links = []
+
+all_categories = productdata.homepage_get_all_categories(driver,url)
+
 
 try:
     # Wait for parent elements to load

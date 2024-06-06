@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 
 # Assuming 'driver' is your initialized Selenium WebDriver instance
@@ -95,3 +96,56 @@ def extract_product_details(driver, urls):
 
 # Assuming driver is already initialized and url_links is your list of URLs
 # extracted_products = extract_product_details(driver, url_links)
+
+def homepage_get_all_categories(driver,url):
+    categories = []
+    try:
+        driver.get(url)
+        # Wait for the page to load
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+
+        print('finished body')
+
+        menu_elements = WebDriverWait(driver, 5).until(
+        EC.presence_of_all_elements_located((By.CLASS_NAME, "menu"))
+        )
+
+        # Iterate over each menu element
+        menu_element = menu_elements[0]
+        print(menu_element.get_attribute("innerHTML"))
+        try:
+            driver.execute_script("document.getElementById('shop-mt-mobile').click();")
+            print("Clicked on the 'Shop' anchor successfully.")
+        except TimeoutException:
+            print("Timeout waiting for 'Shop' anchor in a menu element.")
+            
+        print('after click')
+
+        submenu = WebDriverWait(driver, 10).until(
+              EC.element_to_be_clickable((By.ID, "navigation-v2-category-container")))
+        
+        print('found navigation container')
+
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, 'level1-all-departments'))
+        )
+
+        print('found all departments')
+        
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        div = soup.find('div', {'id': 'level1-all-departments'})
+        anchors = div.find_all('a')
+
+        hrefs = [a['href'] for a in anchors]
+
+        for href in hrefs:
+            categories.append("https://www.costco.com/" + href)
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    
+    print(categories)
+    return categories
+
+   
+
