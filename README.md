@@ -17,6 +17,7 @@ Built w/ Selenium, Beautiful Soup, Pandas
 - Navigating urls and subpage directories
 
 ## Future Goals
+- More efficient searching and page redirecting
 - Work on making data more descriptive, have more attributes for each product object (ex. reviews, company info, instructions)
 - Some data extracted can be NAN, may be issue with ID identifying
 - Deploy a friendly UI to prompt
