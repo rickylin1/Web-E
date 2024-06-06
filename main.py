@@ -6,7 +6,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
 import time
 import productdata
+import urllib.parse
 import pandas as pd
+
+def is_absolute(url):
+    return bool(urllib.parse.urlparse(url).netloc)
 
 def subpage_subcategory_links(soup):
     category_link = []
@@ -24,9 +28,13 @@ def product_links(subpage_categories):
             product_url = product_link['href']
     else:     
         for link in subpage_categories:
-            full_url = "https://www.costco.com" + link
+            if not is_absolute(link):
+                full_url = "https://www.costco.com" + link
+            else:
+                full_url = link
+            print('line 28 main.py' + full_url)
             driver.get(full_url)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             content = BeautifulSoup(driver.page_source, 'html.parser')
             for product_section in content.find_all('div', {'automation-id': 'productList'}):
                 for product_link in product_section.find_all('a'):
@@ -35,11 +43,9 @@ def product_links(subpage_categories):
     #this should remove duplicates by first converting to a set, then making it a list 
     product_urls = list(set(product_urls))
     valid_urls = [url for url in product_urls if url.endswith('.html')]
-    # print(valid_urls)
     product_details = productdata.extract_product_details(driver,valid_urls)
     df = pd.DataFrame(product_details)
     df.to_csv('costco_data.csv', index=False, mode='a', header=False)
-    # print(product_details)
 
 
     return valid_urls
@@ -59,9 +65,9 @@ all_categories = productdata.homepage_get_all_categories(driver,url)
 
 for category_url in all_categories:
         url_links = []
-        print(category_url + "is being processed")
+        print(category_url + " is being processed")
         driver.get(category_url)
-        parent_elements = WebDriverWait(driver, 10).until(
+        parent_elements = WebDriverWait(driver, 5).until(
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".eco-ftr"))
         )
 
@@ -76,9 +82,11 @@ for category_url in all_categories:
                 link = child_element['href']
                 url_links.append(link)
 
-            img_elements = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "img.img-responsive.btn-block"))
-        )
+        print("the first of link of  " + category_url +  " is " + url_links[0])
+
+        # img_elements = WebDriverWait(driver, 10).until(
+        # EC.presence_of_all_elements_located((By.CSS_SELECTOR, "img.img-responsive.btn-block"))
+        # )
         
         print("url links is")
         print(url_links)
@@ -86,23 +94,20 @@ for category_url in all_categories:
         # Loop through each link and click
         for link in url_links:
             try:
-                full_url = "https://www.costco.com/" + link
-                # Click on the link
+                full_url = "https://www.costco.com" + link
+                print('line 91 main.py' + full_url)
                 driver.get(full_url)
-                # Wait for the page to load
-                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-                # Create subpage soup
+                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
                 subpage_soup = BeautifulSoup(driver.page_source, 'html.parser')
                 product_links(subpage_subcategory_links(subpage_soup))
 
             finally:
                 # Go back to the previous page
                 driver.back()
-                # Wait for the page to load
-                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             
         
-        url_links.clear(cl)
-        # Wait for 3 seconds (optional)
+        url_links.clear()
+
         time.sleep(3)
 
