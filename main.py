@@ -55,25 +55,16 @@ driver.get(url)
 #list of dicts
 product_details = []
 
-# List to store extracted URLs
-url_links = []
-
 all_categories = productdata.homepage_get_all_categories(driver,url)
 
-
-    # Wait for parent elements to load
-    # parent_elements = WebDriverWait(driver, 10).until(
-    #     EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".col-xs-4.col-md-2.eco-ftr"))
-    # )
-
 for category_url in all_categories:
+        url_links = []
         print(category_url + "is being processed")
         driver.get(category_url)
         parent_elements = WebDriverWait(driver, 10).until(
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".eco-ftr"))
         )
 
-            
         # Extract URLs using Beautiful Soup
         for parent in parent_elements:
             # Parse HTML content of the parent element
@@ -88,16 +79,10 @@ for category_url in all_categories:
             img_elements = WebDriverWait(driver, 10).until(
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, "img.img-responsive.btn-block"))
         )
-
-        # for img_element in img_elements:
-        #     soup = BeautifulSoup(img_element.get_attribute('innerHTML'), 'html.parser')
-        #     # Navigate to the parent's parent of the img element using BeautifulSoup
-        #     parent_parent_element = img_element.parent().parent
-        #     # Assuming href attribute is in the parent's parent element
-        #     href_attribute = parent_parent_element['href']
-        #     if href_attribute:
-        #         url_links.append(href_attribute)
         
+        print("url links is")
+        print(url_links)
+            
         # Loop through each link and click
         for link in url_links:
             try:
@@ -116,9 +101,8 @@ for category_url in all_categories:
                 # Wait for the page to load
                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             
-            
-        url_links.clear()
         
+        url_links.clear(cl)
         # Wait for 3 seconds (optional)
         time.sleep(3)
 
