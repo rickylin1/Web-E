@@ -8,7 +8,7 @@ Built w/ Selenium, Beautiful Soup, Pandas
 - Help plan future shopping lists
 
 ## Challenges
-- Number of page redirect requrests potentially can violate TOS and seem like a bot, so ethics is a problem
+- Number of page redirect requrests potentially can violate TOS and seem like a bot, so ethics is a problem, got IP banned after two days of scraping
 - Did not upload amazon info, since I don't want to get banned from amazon
 
 ## Lessons
