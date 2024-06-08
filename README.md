@@ -1,4 +1,5 @@
-Web-E is a webscraper dedicated to finding the cheapest and best deals for you at your most frequented stores! 
+<h1>Web-E</h1>
+A webscraper dedicated to finding the cheapest and best deals for you at your most frequented stores! 
 Currently deployed for Amazon & Costco
 Built w/ Selenium, Beautiful Soup, Pandas
 
